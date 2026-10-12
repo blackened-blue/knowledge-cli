@@ -36,6 +36,8 @@
 - Q: What happens when a secret reaches the wiki? -> A: The first release does not rewrite repository history. The assistant tells the member to change the secret's value at once and explains that removing it from history is the repository owner's job.
 - Q: Should search results mark unreviewed pages? -> A: Yes. Every unreviewed page in the results carries an "unreviewed" label, so members and assistants can tell it from a page in the main line.
 - Q: What does status show about a member's proposals? -> A: On GitHub, the member's open and rejected proposals. A rejected proposal never deletes the member's version, which stays in the local copy as a local edit. On other hosts, status shows only the branches that were pushed.
+- Q: Which operating systems does the first release support? -> A: macOS, Linux and Windows, decided in spec 000. Page paths, line endings and session start must work on all three.
+- Q: What happens when a wiki was written in a newer format than the tool understands? -> A: The tool changes nothing and tells the member to update, decided in spec 000. The marker states a format version.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -69,6 +71,7 @@ A new member has a repository URL from their team. They ask their assistant to j
 1. **Given** a valid repository URL, **When** the member asks to join, **Then** the wiki is copied to the machine and a search for a known page title returns that page.
 2. **Given** a URL that is unreachable or not a team wiki, **When** the member asks to join, **Then** the assistant explains what it found and changes nothing on the machine. If the repository holds markdown pages but no marker file, the assistant says an admin can adopt it.
 3. **Given** the member already joined this wiki, **When** they ask to join again, **Then** the assistant reports the existing setup and refreshes it without duplicating anything.
+4. **Given** a wiki whose marker states a newer format version than the tool understands, **When** the member asks to join, **Then** the tool changes nothing and tells the member to update.
 
 ---
 
@@ -193,6 +196,7 @@ A member who sees odd behavior asks the assistant to check their setup. The assi
 - **FR-027**: Share MUST list every new, changed, deleted and renamed page in the local copy and MUST let the member remove pages from the list before confirming.
 - **FR-028**: The system MUST support wikis of up to 5,000 pages and up to 5 joined wikis per machine.
 - **FR-029**: Every step MUST work on any Git host, except that proposals are opened automatically only on GitHub. On other hosts, the system MUST push the proposal's branch and tell the member what to do next.
+- **FR-030**: When a wiki's marker states a format version newer than the tool understands, the tool MUST NOT change the wiki or the local copy and MUST tell the member to update.
 
 ### Key Entities
 
@@ -221,7 +225,7 @@ A member who sees odd behavior asks the assistant to check their setup. The assi
 ## Assumptions
 
 - Each team has, or can create, one dedicated repository for its wiki, with write access for its contributors and a protected default branch. This spec calls that branch the main line.
-- Members use a computer running macOS or Linux and an AI assistant that can run shell commands and load a skill.
+- Members use a computer running macOS, Linux or Windows and an AI assistant that can run shell commands and load a skill.
 - The wiki is made of text pages. Images and other binary files are out of scope for the first release.
 - In the default layout, the original source documents that pages cite live in the wiki repository next to the pages, so every member can trace a citation. Teams that choose another layout decide where their sources live.
 - Repository history is never rewritten by this feature, and removing a leaked secret from history is the repository owner's job.
