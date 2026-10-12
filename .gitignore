@@ -52,3 +52,10 @@ m4/lt~obsolete.m4
 # can automatically generate from config.status script
 # (which is called by configure script))
 Makefile
+
+# Spec Kit lives on branch speckit (worktree at .speckit/)
+/.speckit/
+/.claude/skills
+/.kiro/skills
+/.specify
+/specs
