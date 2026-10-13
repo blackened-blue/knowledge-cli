@@ -470,6 +470,32 @@ The project owner will run these on Linux and Windows machines. Every one of the
 
 **Review triggers**: reopen if `factory/` grows beyond a size reviewers can navigate (US4 test), or if the type-only import rule between `policy` and `factory` causes repeated check failures.
 
+## D-039: Diagram standard for the architecture documents (owner choice)
+
+**Status**: Accepted, 2026-10-13 (owner choice).
+
+**Decision**: The documents in `architecture/` use a fixed set of Mermaid diagrams, each answering one question:
+
+| Diagram | Question it answers | Document |
+|---|---|---|
+| C4 Context (`C4Context`) | Who uses the system and what it touches outside | business-architecture.md |
+| C4 Container (`C4Container`) | The main units inside, where data lives, the member's machine boundary | system-architecture.md, Parts |
+| C4 Component (`C4Component`) | The four layers and the direction of dependencies | project-structure.md |
+| Sequence diagram, one per flow | Who calls whom in order, with the failure branches | system-architecture.md, Data flows (setup, join, share, sync, search) |
+| State diagram | How a wiki page changes status | business-architecture.md, Business rules |
+| Flowchart with groups | Trust zones and where the threats cross a boundary | system-architecture.md and threat-model.md |
+| One SVG figure (`diagrams/layers.svg`) | Why inner layers do not know outer layers (concentric circles) | project-structure.md |
+
+**Rules**: One diagram answers one question. Labels are in English. Each diagram has a caption. A diagram has at most about 8 boxes. Each C4 diagram has a flowchart fallback in a collapsed block of the same document.
+
+**Not used**: block diagram, event modeling, `C4Dynamic` and `C4Deployment`. `C4Dynamic` lists steps in order and cannot show alternative branches, which the flows need. The system runs in one place, so a deployment diagram adds nothing.
+
+**Risks**: The C4 diagram types of Mermaid are labelled experimental, so the syntax may change and the hosting site may not render them. The fallbacks cover this. No diagram has been rendered yet; each must be checked in a renderer when it is written.
+
+**Alternatives considered**: flowcharts only (stable, but no shared C4 vocabulary); C4 Dynamic for flows (no branches); block diagrams (manual layout, new); event modeling (needs a recent Mermaid version and fits event-driven systems).
+
+**Review triggers**: reopen if the hosting site cannot render the C4 types, or if a diagram needs more than about 8 boxes to answer its question.
+
 ## Spec proposals raised by the experiments (FR-016)
 
 **Status**: Both proposals were approved by the project owner on 2026-10-13 and applied to `specs/001-team-knowledge-skill/spec.md` (FR-002, FR-003, FR-017, and a new Clarifications entry that records the limits of the E6 evidence).

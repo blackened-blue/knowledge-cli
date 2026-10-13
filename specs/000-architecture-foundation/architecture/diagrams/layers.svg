@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 780" width="720" height="780" role="img" aria-labelledby="t d">
+  <title id="t">Layers of knowledge-cli as concentric circles</title>
+  <desc id="d">Four concentric layers. From the center outward: domain, application, infrastructure, infrastructure.cli. Dependencies point inward.</desc>
+  <rect width="720" height="780" fill="#ffffff"/>
+  <circle cx="360" cy="370" r="340" fill="#cfe8ff" stroke="#0b5394" stroke-width="3"/>
+  <circle cx="360" cy="370" r="268" fill="#ffe0b2" stroke="#b45309" stroke-width="3"/>
+  <circle cx="360" cy="370" r="188" fill="#c8e6c9" stroke="#1b5e20" stroke-width="3"/>
+  <circle cx="360" cy="370" r="104" fill="#e1bee7" stroke="#6a1b9a" stroke-width="3"/>
+
+  <g font-family="Helvetica, Arial, sans-serif" text-anchor="middle">
+    <text x="360" y="62" font-size="20" font-weight="bold" fill="#0b2a4a">infrastructure.cli</text>
+    <text x="360" y="84" font-size="14" fill="#0b2a4a">commands, container (composition root)</text>
+
+    <text x="360" y="138" font-size="20" font-weight="bold" fill="#4a2500">infrastructure</text>
+    <text x="360" y="160" font-size="14" fill="#4a2500">git, files, index, release, log</text>
+
+    <text x="360" y="222" font-size="20" font-weight="bold" fill="#0d2e12">application</text>
+    <text x="360" y="244" font-size="14" fill="#0d2e12">use cases, ports</text>
+
+    <text x="360" y="362" font-size="22" font-weight="bold" fill="#2a0a3a">domain</text>
+    <text x="360" y="386" font-size="14" fill="#2a0a3a">policy, factory</text>
+    <text x="360" y="406" font-size="14" fill="#2a0a3a">no IO</text>
+
+    <text x="360" y="752" font-size="16" font-weight="bold" fill="#212121">Dependencies point inward only</text>
+  </g>
+</svg>

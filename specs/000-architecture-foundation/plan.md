@@ -69,8 +69,9 @@ specs/000-architecture-foundation/
 │   ├── system-architecture.md
 │   ├── threat-model.md
 │   ├── project-structure.md
-│   └── traceability-map.md
-└── tasks.md             # Phase 2 (/speckit-tasks, not created here)
+│   ├── traceability-map.md
+│   └── diagrams/        # Image files used by the documents (layers.svg: concentric circles of the layers)
+└── tasks.md             # Phase 2 (/speckit-tasks)
 ```
 
 ### Source Code (repository root)
@@ -138,6 +139,7 @@ docs/                    # Product documentation
 | Versions | Semantic version for the package. Separate `format_version` in the marker | D-033 |
 | Workflow text | Embedded in the package at build time | D-034 |
 | Project structure | Clean Architecture: domain, application, infrastructure, infrastructure.cli. `tsyringe` in the composition root only | D-035 |
+| Diagrams | C4 (Mermaid) levels 1 to 3 with flowchart fallbacks, sequence per flow, state of a page, trust-zone flowchart, one SVG figure | D-039 |
 | Domain objects | `domain/policy` and `domain/factory`. Use cases build every object that has a validity rule through a factory (simple values exempt). `tools/check` enforces it | D-038 |
 
 ## Skeleton Stage
