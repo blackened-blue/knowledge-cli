@@ -19,20 +19,25 @@ runs the commands and MUST NOT require a member to understand Git. No feature ma
 AI tool: each behavior MUST work in any assistant that can run shell commands and load a skill.
 
 ### IV. Reviewed Publishing
-Nothing is published to the wiki's default branch directly. A new page MAY be published to a
-dedicated contributions branch without a pull request, using a unique file name so concurrent
-contributors never collide. A change to an existing page MUST go through a pull request. If the
-network is unavailable, a contribution MUST be queued locally and retried later, never lost.
+Nothing is published to the wiki's main line (its protected default branch) directly. A new
+page, meaning one whose path does not exist on the team's side, MAY be published to a dedicated
+contributions branch without a pull request. Pages are identified by path. A new page whose path
+is already taken is held for the member and never renamed automatically. A change to a page in
+the main line, including deleting or renaming it, MUST go through a proposal (pull request) that
+a reviewer approves. An edit to an unreviewed page that is based on the current team version MAY
+be sent directly to the contributions branch. If the network is unavailable, a contribution MUST
+be queued locally and retried later, never lost.
 
-### V. Safe and Fast Pull
-Pull MUST run automatically at session start and MUST NOT overwrite a file the member changed
-locally; it keeps the file and says so. Pull MUST work offline from the last clone. Any hook MUST
+### V. Safe and Fast Sync
+Sync MUST run automatically at session start and MUST NOT overwrite a file the member changed
+locally; it keeps the file and says so. Sync MUST work offline from the last clone. Any hook MUST
 finish within 5 seconds, fail softly (exit 0, record the cause), and never break the session.
 `--dry-run` MUST preview every command that writes.
 
 ### VI. Deterministic Search, Minimal CLI
-The CLI offers setup, join, pull, search, share, status and doctor, and nothing that calls a
-language model. Search MUST be local, deterministic and explainable (keyword ranking over a
+The CLI offers setup, join, sync, search, share, status, doctor and skill, and nothing that calls
+a language model. (`skill` prints the workflow text that matches the installed version.) Search
+MUST be local, deterministic and explainable (keyword ranking over a
 local index). Ingesting sources and answering questions are agent skills, not CLI commands. A new
 CLI command requires proof that no existing command or option can be extended instead.
 
@@ -77,4 +82,12 @@ removing or redefining a principle, MINOR for adding a principle or materially e
 guidance, PATCH for clarifications. Reviewers MUST verify compliance on every pull request, and
 any justified violation MUST be listed in the plan's complexity section.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-12
+**Version**: 1.1.1 | **Ratified**: 2026-10-12 | **Last Amended**: 2026-10-13
+
+Amendment 1.1.0 (MINOR, approved by the project owner on 2026-10-13): Principle IV now matches
+the clarified specs (pages identified by path, collisions held for the member, proposals for
+changes to the main line, direct edits to unreviewed pages). Principle VI renames `pull` to `sync`
+and adds the `skill` command.
+
+Amendment 1.1.1 (PATCH, approved by the project owner on 2026-10-13): Principle V uses "Sync"
+instead of "Pull" in its title and text, matching Principle VI and the specs. No rule changed.

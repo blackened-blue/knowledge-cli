@@ -20,10 +20,13 @@
 - Q: What happens when a tool meets a wiki written in a newer format? -> A: The marker states a format version. A tool that meets a newer version than it understands changes nothing and tells the member to update.
 - Q: Is the installer checked for integrity? -> A: Yes. The installer verifies what it downloads against information from the publisher and stops with a message if the check fails.
 - Q: What must already be on a member's machine? -> A: An AI assistant that can run commands, and Git. A language runtime may also be required, as in the team tooling this product learns from, but only if the installer checks for it first and tells the assistant exactly what to do when it is missing. The stack decision weighs a distribution that needs no separate runtime as a high-priority criterion.
-- Q: When can the plan for spec 001 resume, and when can 001 be implemented? -> A: The plan for 001 resumes as soon as the owner has approved all decisions of this spec. The skeleton must be finished before the implementation of 001 starts, not before its plan.
+- Q: When can the plan for spec 001 resume, and when can 001 be implemented? -> A: The plan for 001 resumes as soon as the owner has approved all decisions of this spec. The skeleton must be finished before the implementation of 001 starts, not before its plan. (Refined by the entry "When can the plan for spec 001 resume, given decisions that wait for experiments?" in this session: the plan also waits for experiments E9 and E3, or an owner waiver.)
 - Q: Must the system architecture include a threat model? -> A: Yes. It is a required deliverable: the assets to protect, the likely threats, and the mechanisms that answer them, including the secret scan and the installer integrity check.
 - Q: How is the product updated? -> A: It never updates itself silently. The health check reports a newer version, and the assistant updates it only when the member asks, with the same integrity check as the first install.
 - Q: Does the product keep logs? -> A: Yes, only on the member's machine. The log is size-limited, never holds page content or secrets, and is never sent anywhere. The health check uses it.
+- Q: Do SC-013 to SC-018 require behavior tests in this feature? -> A: No. This feature delivers only a skeleton with a version command (SC-012), so these criteria require the architecture to record the mechanism and a verification approach. The 100% pass-rate tests belong to the acceptance tests of spec 001.
+- Q: How do members get the product? -> A: As an npm package with provenance (research D-036), following the reference project. The install message checks the prerequisites first (research D-037).
+- Q: When can the plan for spec 001 resume, given decisions that wait for experiments? -> A: When experiments E9 (npm provenance and integrity) and E3 (session-start hooks on Windows) have reported their results, or when the project owner has waived them in writing. Decisions accepted pending E9 (D-005, D-027, D-036) and the draft decision D-008 do not block the plan once that condition is met. This refines the earlier answer, which required every decision to be approved.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -218,21 +221,21 @@ After the owner approves the tech stack and the project structure, a contributor
 - **SC-005**: The four open items from spec 001 each have an accepted decision.
 - **SC-006**: All five core scenarios walk through the architecture without an unresolved gap.
 - **SC-007**: In a review with five people, at least four place at least nine of ten sample files where the project structure document says they belong.
-- **SC-008**: The project owner has approved every decision before the plan for spec 001 resumes, and the skeleton is finished before the implementation of spec 001 starts.
+- **SC-008**: Before the plan for spec 001 resumes, every decision is accepted by the project owner, except decisions that wait for experiment E9 or E3, whose experiments must have reported or been waived in writing by the owner. The skeleton is finished before the implementation of spec 001 starts.
 - **SC-009**: A reviewer finds the reason for any chosen decision, and the conditions for revisiting it, within two minutes.
 - **SC-010**: On a clean machine, a contributor builds, lints and tests the skeleton with one documented command in under 10 minutes, in 100% of tested runs on macOS, Linux and Windows.
 - **SC-011**: A deliberately added forbidden dependency makes the checks fail in 100% of tests, and the failure names the dependency.
 - **SC-012**: The skeleton contains no product behavior beyond the version command, as confirmed by a review of its command list.
-- **SC-013**: A network trace of a full run of the five core scenarios shows connections only to the team's repository host, in 100% of tested runs.
-- **SC-014**: A wiki that states a newer format version is left unchanged by an older tool in 100% of tests, and the member is told to update.
-- **SC-015**: A download that fails its integrity check is rejected and nothing is installed, in 100% of tests with altered downloads.
-- **SC-016**: In tests with seeded secrets and page text, the log holds none of them in 100% of runs, and its size stays within its limit.
-- **SC-017**: On clean machines of each supported system that lack the required runtime, the installer reports what is missing and the exact step to fix it in 100% of tests, and the install completes after that step.
-- **SC-018**: In tests, a newer version is reported by the health check and never installed without the member's request, in 100% of runs, and an update that fails its integrity check is rejected.
+- **SC-013**: The architecture states that normal use connects only to the team's repository host (plus the package registry at install and update), and records a verification approach (a network trace of the five core scenarios) that spec 001 uses as an acceptance test with a 100% pass rate.
+- **SC-014**: The architecture records how a wiki with a newer format version is left unchanged by an older tool and how the member is told to update, with a verification approach that spec 001 uses as an acceptance test.
+- **SC-015**: The architecture records how an install or update that fails its integrity check is rejected with nothing installed, backed by the experiment result for the chosen distribution route, and a verification approach that spec 001 uses as an acceptance test.
+- **SC-016**: The architecture records what the local log may and may not contain and its size limit, with a verification approach (seeded secrets and page text) that spec 001 uses as an acceptance test.
+- **SC-017**: The architecture records how a missing prerequisite is detected, reported with the exact fix step, and verified on each supported system, with a verification approach that spec 001 uses as an acceptance test.
+- **SC-018**: The architecture records how a newer version is reported by the health check and never installed without the member's request, with a verification approach that spec 001 uses as an acceptance test.
 
 ## Assumptions
 
-- This feature designs and decides first, then creates the project skeleton as its last stage. The skeleton starts only after the owner approves the tech stack and the project structure. The plan for spec 001 can resume once the owner has approved all decisions, and the implementation of spec 001 starts from a finished skeleton.
+- This feature designs and decides first, then creates the project skeleton as its last stage. The skeleton starts only after the owner approves the tech stack and the project structure. The plan for spec 001 can resume once the owner has approved the decisions, with the exception for experiments E9 and E3 described in SC-008, and the implementation of spec 001 starts from a finished skeleton.
 - The skeleton's code lives on the code side of the repository and reaches the main line through the normal workflow. The documents of this feature stay with the specs.
 - The documents this feature produces are specification material and live with the specs, not in the product's code.
 - The project owner is the decision authority for architecture decisions, the constitution and the specs.

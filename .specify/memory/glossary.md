@@ -55,3 +55,11 @@ _Avoid_: Draft, pending page
 **Main Line**:
 The protected default branch of a Team Wiki's repository, where reviewed Pages live.
 _Avoid_: Trunk, master, production
+
+**Sync**:
+Bringing a Member's Local Copy up to date with the team's version, without overwriting what the Member changed.
+_Avoid_: Pull, update, refresh
+
+**Stale**:
+A Local Copy whose latest sync failed or ran out of time, so it may be behind the team's version.
+_Avoid_: Outdated, offline
