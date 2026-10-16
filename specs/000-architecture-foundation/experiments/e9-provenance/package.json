@@ -1,0 +1,13 @@
+{
+  "name": "@blackened-blue/knowledge-e9-test",
+  "version": "0.0.1",
+  "description": "Throwaway package for experiment E9 (provenance check). Not the product.",
+  "license": "MIT",
+  "bin": { "e9-hello": "hello.mjs" },
+  "files": ["hello.mjs"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blackened-blue/knowledge-cli.git"
+  },
+  "publishConfig": { "access": "public", "provenance": true }
+}
