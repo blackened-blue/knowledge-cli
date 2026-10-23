@@ -20,19 +20,19 @@ complete. Each check names the success criterion it covers.
    Expected: Node v26.7.0 or newer, a git version, and `/usr/bin/security`.
 
 2. **Every capability has an owner** (SC-001).
-   Open `data-model.md`, table "Capability map". Expected: 13 rows, each with an owning part.
+   Open `data-model.md`, table "Capability map". Expected: 13 rows, each with an owning layer.
 
 3. **Every decision has an alternative** (SC-002).
-   Open `research.md`. Expected: each of D-001 to D-009 that makes a technology or design
+   Open `research.md`. Expected: each of D-001 to D-010 that makes a technology or design
    choice lists at least one rejected alternative or a stated reason none exists.
 
 4. **Find where new code goes in under 2 minutes** (SC-003).
    Pick any capability from `data-model.md` and, using only `plan.md`, name the folder under
-   `src/` where its rule belongs. Expected: `src/domain/`.
+   `src/` where its rule belongs. Expected: `src/application/` (or `src/domain/` for a pure rule).
 
 5. **Dependency direction** (SC-004).
-   Read the "Parts and allowed dependencies" table in `plan.md`. Expected: `domain` depends
-   on nothing. A mechanical import check is a first task for spec 001; it does not exist yet.
+   Read the "Layers and allowed dependencies" table in `plan.md`. Expected: `domain` depends
+   on nothing and `application` depends only on `domain`. A mechanical import check is a first task for spec 001; it does not exist yet.
 
 6. **Read speed target is measurable** (SC-006).
    Expected: `plan.md` Technical Context states the 1-second goal and the scale of 100 members

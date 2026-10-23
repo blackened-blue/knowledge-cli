@@ -13,7 +13,7 @@ evidence and rejected alternatives are in [research.md](./research.md). The capa
 map that tests the architecture against the first planned feature is in
 [data-model.md](./data-model.md).
 
-All decisions D-001 to D-009 were approved by the owner on 2026-10-24 (SC-005). Open items
+All decisions D-001 to D-010 were approved by the owner on 2026-10-24 (SC-005). Open items
 O-1 (lowest Node version) and O-3 (HTTP knowledge repo format) remain; see research.md.
 
 ## Technical Context
@@ -44,63 +44,79 @@ processes); the user's own `git` and macOS `/usr/bin/security` are called as pro
 
 | Principle | Result | How this plan satisfies it |
 |-----------|--------|----------------------------|
-| I. Test-First | Pass | D-009 defines three test kinds, one per part; tasks put the failing test first |
-| II. Domain Independence | Pass | `domain` imports nothing outside itself; the outside world is reached only through four ports (below) |
-| III. Architecture Before Features | Pass, pending owner approval | This plan is the architecture; SC-005 blocks spec 001 until it is approved |
-| IV. Simplicity | Pass | three parts, four ports, zero third-party runtime dependencies (D-001 to D-005) |
+| I. Test-First | Pass | D-009 defines three test kinds, each covering named layers; tasks put the failing test first |
+| II. Domain Independence | Pass | `domain` and `application` import nothing from `infrastructure` or `infrastructure.cli`; the outside world is reached only through four ports (below) |
+| III. Architecture Before Features | Pass | This plan is the architecture; the owner approved D-001 to D-009 and then chose the four-layer form (D-010) |
+| IV. Simplicity | Pass with a recorded exception | four layers, four ports, zero third-party runtime dependencies; the extra layer is the owner's choice, recorded in Complexity Tracking |
 | V. CLI Text I/O | Pass | [contracts/cli-conventions.md](./contracts/cli-conventions.md) fixes stdout, stderr, exit codes, and the JSON form |
 | VI. Versioning | Pass | the same contract file marks output shape and command names as breaking-change surface |
 | VII. Observability | Pass | D-007 defines the error form and the `--verbose` log line |
 
-No violation, so Complexity Tracking is empty.
+One exception is recorded in Complexity Tracking (the fourth layer).
 
-**Re-check after design**: unchanged. The design added no part, port, or dependency beyond
+**Re-check after design**: unchanged. The design added no layer, port, or dependency beyond
 those counted above.
+
+**Term**: the constitution and the spec say "Domain". The independence rule (Principle II)
+applies to the two innermost layers together, `domain` and `application`.
 
 ## Architecture
 
-### Parts and allowed dependencies
+The architecture is Clean Architecture in four layers (D-010), with the folder names chosen by
+the owner. Dependencies point inward only.
+
+### Layers and allowed dependencies
 
 ```text
-cli ──────► adapters ──────► domain
- │                             ▲
- └─────────────────────────────┘
+infrastructure.cli ──► infrastructure ──► application ──► domain
 ```
 
-| Part | Responsibility | May depend on |
-|------|----------------|---------------|
-| `domain` | Team rules, roles, scope rules, use cases, and the four port definitions | nothing |
-| `adapters` | One implementation per port: git, HTTP, Keychain, local files, stderr log | `domain` |
-| `cli` | Parse arguments, call a use case, print output, set exit code, wire adapters to ports | `domain`, `adapters` |
+| Layer | Responsibility | May depend on |
+|-------|----------------|---------------|
+| `domain` | Team, member, role, scope, and the rules that hold in every use case | nothing |
+| `application` | One function per capability (join a team, switch team, uninstall, and so on) and the four port definitions | `domain` |
+| `infrastructure` | Gateways that implement the ports (git, HTTP, Keychain, local files, stderr log) and the raw tools they use (process runner, file system, HTTP client) | `application`, `domain` |
+| `infrastructure.cli` | Controllers that turn arguments into a use-case call, presenters that turn a result into text or JSON, and the entry point that wires everything | `infrastructure`, `application`, `domain` |
 
-`domain` must not import from `adapters` or `cli` (Principle II, SC-004). This is checked by a
-test that reads the import lines of every file under `src/domain/` and fails on any import that
-leaves the folder or is not a Node built-in type-only import.
+`domain` and `application` must not import from `infrastructure` or `infrastructure.cli`, and
+`domain` must not import from `application` (Principle II, SC-004). A test reads the import
+lines of every file under `src/domain/` and `src/application/` and fails on any import that
+points outward.
 
-### Ports (defined in `domain`)
+### Ports (defined in `application`)
 
-| Port | Purpose | Implementations |
-|------|---------|-----------------|
-| `KnowledgeSource` | Read a team's knowledge repo; write to it when the source allows | git adapter (read and write), HTTP adapter (read only) |
-| `SecretStore` | Save, read, and delete an API key | Keychain adapter |
-| `LocalStore` | Team copies, active team, ownership manifest | file adapter |
-| `Log` | Verbose diagnostics to stderr | stderr adapter |
+| Port | Purpose | Implementations (in `infrastructure`) |
+|------|---------|----------------------------------------|
+| `KnowledgeSource` | Read a team's knowledge repo; write to it when the source allows | git gateway (read and write), HTTP gateway (read only) |
+| `SecretStore` | Save, read, and delete an API key | Keychain gateway |
+| `LocalStore` | Team copies, active team, ownership manifest | local-files gateway |
+| `Log` | Verbose diagnostics to stderr | stderr gateway |
+
+A use case returns a plain result value. It does not call a presenter port; the controller
+passes the result to the presenter. This keeps the number of ports at four.
 
 ### Project structure
 
 ```text
 src/
-├── domain/        # rules, use cases, port types (no outside imports)
-├── adapters/      # git, http, keychain, files, log
-└── cli/           # commands, output, wiring, entry point
+├── application/
+├── domain/
+├── infrastructure/
+└── infrastructure.cli/
 
 tests/
-├── unit/          # domain with fake ports
-├── adapters/      # each adapter against a real local resource
-└── cli/           # command run as a child process
+├── application/          # use cases with fake ports
+├── domain/               # rules, no ports needed
+├── infrastructure/       # each gateway against a real local resource
+└── infrastructure.cli/   # command run as a child process
 ```
 
-**Structure Decision**: single project with three source folders that match the three parts.
+`tests/` mirrors `src/`: each source folder has a test folder of the same name, and a test for
+a file in `src/<layer>/` lives in `tests/<layer>/`. The kind of test follows the layer (D-009):
+fakes for `domain` and `application`, real local resources for `infrastructure`, a child
+process for `infrastructure.cli`.
+
+**Structure Decision**: single project with four source folders that match the four layers.
 No monorepo and no separate packages. Files inside a folder are named after what they do; this
 plan does not fix file names.
 
@@ -125,8 +141,8 @@ plan does not fix file names.
 specs/000-architecture-and-tech-stack/
 ├── spec.md
 ├── plan.md              # this file
-├── research.md          # decision records D-001 to D-009 and open items
-├── data-model.md        # parts, ports, capability map
+├── research.md          # decision records D-001 to D-010 and open items
+├── data-model.md        # layers, ports, capability map
 ├── quickstart.md        # how to check this spec is met
 ├── contracts/
 │   └── cli-conventions.md
@@ -137,4 +153,6 @@ specs/000-architecture-and-tech-stack/
 
 ## Complexity Tracking
 
-No constitution violations. Nothing to justify.
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| Principle IV: four layers (`domain`, `application`, `infrastructure`, `infrastructure.cli`), where the earlier proposal had three parts | Owner decision of 2026-10-24 to use Clean Architecture in four layers (D-010). The owner's reasons: use cases kept separate from business rules; the project is expected to grow; the team already uses this standard form; outside tools should be easy to replace (see D-010) | The three-part form (`domain`, `adapters`, `cli`, with use cases inside `domain`) was the assistant's recommendation. The owner chose the four-layer form instead, so it was not adopted |

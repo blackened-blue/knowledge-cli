@@ -164,8 +164,9 @@ installed.
   rationale below is the assistant's.
 - **Serves**: Principle I, FR-010
 - **Decision**: Three kinds of tests, all with `node --test`.
-  - **Unit tests** cover the Domain with fake ports. No disk, network, or Keychain.
-  - **Adapter tests** cover each adapter against a real local resource: a temporary git
+  - **Unit tests** cover `domain` and `application` with fake ports. No disk, network, or
+    Keychain.
+  - **Adapter tests** cover each gateway in `infrastructure` against a real local resource: a temporary git
     repository, a local HTTP server on the loopback address, and a throwaway Keychain item.
   - **CLI tests** run the command as a child process and check stdout, stderr, and exit code.
 - **Rationale**: each kind covers one part, so a failure points to one part (FR-010).
@@ -173,11 +174,38 @@ installed.
   - **A third-party test framework**: rejected because the built-in runner passed a test here
     (Verified locally) and a framework adds a dependency (Principle IV). Reopen it only if the
     built-in runner lacks something a task needs.
-  - **Fakes for the adapters as well as for the Domain**: rejected because a fake cannot catch
+  - **Fakes for the gateways as well as for `domain` and `application`**: rejected because a fake cannot catch
     a real git, HTTP, or Keychain behaviour that differs from what the code assumes; D-003
     already found one (the double password prompt).
 - **Local limits**: macOS only, so everything can be run on the maintainer machine. Nothing
   here is CI-only.
+
+## D-010: Clean Architecture in four layers
+
+- **Status**: Approved by the owner on 2026-10-24. The assistant's recommendation was the
+  three-part form below; the owner chose the four-layer form instead.
+- **Owner's reasons** (chosen by the owner on 2026-10-24):
+  1. Keep use cases clearly separate from the business rules.
+  2. The project is expected to grow larger.
+  3. The owner and the team already know and use this standard form.
+  4. Outside tools should be easy to replace.
+- **Serves**: Principle II (Domain Independence), FR-003, FR-010
+- **Decision**: four layers with dependencies pointing inward only:
+  `infrastructure.cli -> infrastructure -> application -> domain`. The folder names are the
+  owner's. `domain` holds rules that hold everywhere. `application` holds one function per
+  capability and the four port definitions. `infrastructure` holds the gateways that implement
+  the ports and the raw tools they use. `infrastructure.cli` holds controllers, presenters, and
+  the entry point.
+- **Alternatives considered**:
+  - **Three parts (`domain`, `adapters`, `cli`)**: the assistant's recommendation, because
+    Principle IV asks for the fewest layers and no capability needed a separate use-case
+    layer yet. Not adopted.
+  - **Other layer names or counts**: not evaluated.
+- **Cost accepted**: one more layer than the recommendation, so a change that touches a
+  capability may edit files in up to four folders. Merging the raw tools into
+  `infrastructure` (instead of a separate layer) keeps the count at four. Recorded in the plan's Complexity Tracking.
+- **Wording**: the constitution and the spec say "Domain"; the independence rule applies to
+  `domain` and `application` together.
 
 ## Open items
 
