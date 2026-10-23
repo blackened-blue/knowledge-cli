@@ -24,8 +24,9 @@ installed.
   FR-006 (macOS only), Principle IV (simplicity)
 - **Decision**: TypeScript on Node.js, installed through npm.
 - **Rationale**:
-  - npm installs a package as a command through its `bin` entry (Unverified here; widely
-    documented behaviour).
+  - npm installs a package as a command through its `bin` entry (Verified locally: a test
+    package installed with `npm install -g --prefix` created a runnable command, and its `.js`
+    entry printed its output).
   - Node's built-in test runner runs a test file with no extra dependency (Verified locally:
     `node --test` passed a one-test file). This serves Principle I without a test framework.
   - Node runs a `.ts` file directly with no build flag (Verified locally on v26.7.0). This keeps
@@ -51,8 +52,10 @@ installed.
 - **Serves**: FR-013
 - **Decision**: Publish compiled JavaScript with type declarations. Development runs `.ts`
   directly; the published package contains `.js`.
-- **Rationale**: Node refuses to strip types for files inside `node_modules` (Unverified),
-  so a published package cannot ship `.ts` as its entry point.
+- **Rationale**: Node refuses to strip types for files inside `node_modules` (Verified locally
+  on v26.7.0: an installed command whose entry was a `.ts` file failed with
+  `ERR_UNSUPPORTED_NODE_MODULES_TYPE_STRIPPING`), so a published package cannot ship `.ts` as
+  its entry point. A `.js` entry installed and ran from the same location.
 - **Alternatives considered**: shipping `.ts` and requiring a loader flag (rejected: every
   user would need the flag); a single bundled executable (out of scope per the owner's answer
   to the installation question).
@@ -72,8 +75,15 @@ installed.
   - **Config file with restricted permissions**: rejected by the owner (FR-014 requires
     Keychain).
 - **Risk**: passing the key as a command argument can expose it in the process list. The
-  adapter MUST pass the key on standard input where the command allows it. Whether the command
-  accepts it that way is open item O-2; if it does not, this decision is reopened.
+  command's own help calls the `-w <value>` form insecure (Verified locally). The adapter MUST
+  NOT use it.
+- **Checked on 2026-10-24 (O-2)**: `security add-generic-password ... -w` with `-w` as the last
+  option and no value reads the key from standard input when input is piped (Verified locally,
+  no terminal attached). It asks twice (password, then retype), so the adapter MUST send the key
+  twice, one per line. Sending it once leaves an item saved with an empty password, so the
+  adapter MUST check the saved item after writing. Reading back with
+  `find-generic-password -w` printed the stored key (Verified locally). The throwaway item used
+  for the check was deleted and its removal was confirmed.
 
 ## D-004: Git access
 
@@ -154,6 +164,6 @@ installed.
 | ID | Item | Decides |
 |----|------|---------|
 | O-1 | Lowest Node version that passes the test suite | Owner, after a test run |
-| O-2 | Whether `security` accepts the key on standard input (D-003) | Assistant, first adapter task |
+| O-2 | Whether `security` accepts the key on standard input (D-003) | Closed 2026-10-24: yes, sent twice (see D-003) |
 | O-3 | Wire format of the HTTP knowledge repo | Owner, in spec 001 |
-| O-4 | `bin` install and the `node_modules` type-stripping behaviour (D-001, D-002) | Assistant, first packaging task |
+| O-4 | `bin` install and the `node_modules` type-stripping behaviour (D-001, D-002) | Closed 2026-10-24: confirmed, `.ts` entry fails, `.js` works (see D-002) |
