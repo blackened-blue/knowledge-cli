@@ -48,7 +48,8 @@ installed.
 
 ## D-002: How the tool is shipped to users
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: FR-013
 - **Decision**: Publish compiled JavaScript with type declarations. Development runs `.ts`
   directly; the published package contains `.js`.
@@ -62,7 +63,8 @@ installed.
 
 ## D-003: Secret storage (API key)
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: FR-014
 - **Decision**: Call the built-in `/usr/bin/security` command through a `SecretStore` port.
   No native module and no third-party package.
@@ -87,7 +89,8 @@ installed.
 
 ## D-004: Git access
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: FR-017, FR-018
 - **Decision**: Run the user's installed `git` as a child process through the `KnowledgeSource`
   port. The tool never reads or stores a git password.
@@ -101,17 +104,24 @@ installed.
 
 ## D-005: HTTP knowledge repo access
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: FR-008, FR-014
 - **Decision**: Use the HTTP client built into Node, behind the same `KnowledgeSource` port.
   The adapter is read-only: its write method is not implemented and returns a clear
   "read-only source" error.
 - **Rationale**: no extra dependency (Principle IV). The wire format of the HTTP repo is not
   defined by any spec yet, so it is open item O-3 and is decided in spec 001.
+- **Alternatives considered**:
+  - **A third-party HTTP client package**: rejected because the built-in client does what a
+    read-only fetch needs and a package adds a dependency to maintain (Principle IV).
+  - **Implementing write support now**: rejected because the owner defined this source as
+    read-only; leaving the write method unimplemented makes a write impossible by structure.
 
 ## D-006: Local copy (offline reads)
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: FR-015, FR-016, FR-019, SC-006
 - **Decision**: One directory per team under one tool-owned root in the user's home directory,
   plus one small state file that names the active team and lists everything the tool created
@@ -125,7 +135,8 @@ installed.
 
 ## D-007: Logging format (deferred category: Observability)
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: Principle VII, FR-011
 - **Decision**: One line per event on stderr, only when `--verbose` is set:
   `LEVEL component: message key=value ...`. No log files. Errors always print on stderr in the
@@ -137,7 +148,8 @@ installed.
 
 ## D-008: Where architecture and decision records live (deferred category)
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Decision**: The architecture record is `plan.md` plus `data-model.md` in this feature
   directory. Decision records are this file (`research.md`). Project-wide terms go in
   `.specify/memory/`. No new top-level folder such as `docs/adr/`.
@@ -148,7 +160,8 @@ installed.
 
 ## D-009: Test strategy
 
-- **Status**: Proposed
+- **Status**: Approved by the owner on 2026-10-24. The owner's reasons were not stated; the
+  rationale below is the assistant's.
 - **Serves**: Principle I, FR-010
 - **Decision**: Three kinds of tests, all with `node --test`.
   - **Unit tests** cover the Domain with fake ports. No disk, network, or Keychain.
@@ -156,6 +169,13 @@ installed.
     repository, a local HTTP server on the loopback address, and a throwaway Keychain item.
   - **CLI tests** run the command as a child process and check stdout, stderr, and exit code.
 - **Rationale**: each kind covers one part, so a failure points to one part (FR-010).
+- **Alternatives considered**:
+  - **A third-party test framework**: rejected because the built-in runner passed a test here
+    (Verified locally) and a framework adds a dependency (Principle IV). Reopen it only if the
+    built-in runner lacks something a task needs.
+  - **Fakes for the adapters as well as for the Domain**: rejected because a fake cannot catch
+    a real git, HTTP, or Keychain behaviour that differs from what the code assumes; D-003
+    already found one (the double password prompt).
 - **Local limits**: macOS only, so everything can be run on the maintainer machine. Nothing
   here is CI-only.
 

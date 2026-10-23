@@ -13,7 +13,8 @@ evidence and rejected alternatives are in [research.md](./research.md). The capa
 map that tests the architecture against the first planned feature is in
 [data-model.md](./data-model.md).
 
-All decisions are **Proposed**. The owner approves them before spec 001 starts (SC-005).
+All decisions D-001 to D-009 were approved by the owner on 2026-10-24 (SC-005). Open items
+O-1 (lowest Node version) and O-3 (HTTP knowledge repo format) remain; see research.md.
 
 ## Technical Context
 
